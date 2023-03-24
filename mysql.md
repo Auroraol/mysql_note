@@ -1,4 +1,4 @@
-# 连接数据库
+#  连接数据库
 
 打开MySQL命令窗口
 
@@ -53,9 +53,11 @@ exit; --退出Mysql
 
 **创建数据库 :  create database [if not exists] 数据库名;**
 
-**删除数据库 : drop database [if exists] 数据库名;**
+**删除数据库 :   drop database [if exists] 数据库名;**
 
 **查看所有数据库 : show databases;             --多了一个s**
+
+2、输入 `show global variables like 'port';`   查看端口号
 
 **使用数据库 : use 数据库名;**
 
@@ -94,7 +96,7 @@ create table [if not exists] `表名`(
 
 ### 数据值和列类型
 
-#### 列类型 : 规定数据库中该列存放的数据类型
+ 列类型 : 规定数据库中该列存放的数据类型
 
 > 数值类型
 
@@ -182,7 +184,7 @@ create table [if not exists] `表名`(
 
 
 
-### 案例:
+### ==案例:==
 
 格式:
 
@@ -195,7 +197,13 @@ create table [if not exists] `表名`(
 )[表类型][表字符集设置][注释];
 ```
 
+------------
 
+**为null必须是默认值**
+
+**不为空必须设置默认值**
+
+-------
 
 ```mysql
 -- 目标 : 创建一个school数据库
@@ -214,8 +222,6 @@ CREATE TABLE IF NOT EXISTS `student` (
 `email` varchar(50) DEFAULT NULL COMMENT '邮箱',
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8     --主键一般一个表只有一个   
-
-
 ```
 
 ![image-20220729145808022](mysql.assets/image-20220729145808022.png)
@@ -223,19 +229,19 @@ PRIMARY KEY (`id`)
 
 
 ```mysql
-**创建数据库 :  create database [if not exists] 数据库名;**
+**创建数据库 :  create database [if not exists] 数据库名;**   // 主要是 exists 
 
-**删除数据库 : drop database [if exists] 数据库名;**
+删除数据库 : drop database if exists 数据库名;
+删除表: drop table if exists 表名;
 
 **查看所有数据库 : show databases;             --多了一个s**
 
-**使用数据库 : use 数据库名;**
+**使用数据库 : use 数据库名;**   // 可以加可以不加;
 
 -- 查看数据库的定义
 SHOW CREATE DATABASE `school`;
 -- 查看数据表的定义
 SHOW CREATE TABLE `student`;
-
 
 -- 显示表结构(显示表一些内容)
 DESC student;  -- 设置严格检查模式(不能容错了)SET sql_mode='STRICT_TRANS_TABLES';
@@ -381,7 +387,637 @@ MySQL的数据表的类型 : **MyISAM** , **InnoDB** , HEAP , BOB , CSV等...
 
 
 
-# DML语言
+ #  总结
+
+## 1. 创建
+
+###   **1.1创建数据库 : **
+
+语法:  create database if not exists `数据库名`;         **(exists)**
+
+### 1.2 **创建表 :  **
+
+语法:  create table if not exists `表名`
+
+ps:  为null必须是设置成默认值,     不为空必须设置一个默认值
+
+```mysql
+--格式:
+create table if not exists `表名`(
+    
+   '字段名1' 列类型 [属性][索引][注释],
+   '字段名2' 列类型 [属性][索引][注释],
+    #...
+   '字段名n' 列类型 [属性][索引][注释]
+   
+) [表类型][表字符集设置][注释];
+```
+
+例子:
+
+~~~mysql
+create table if not exists user(
+id int(11) auto_increment comment "序号",
+username varchar(20) not null default "匿名" comment "姓名",
+password varchar(20) not null default "",
+registerTime int(11) not null default 0,
+primary key(id)
+) engine=innodb default charset=utf8;
+--主键一般一个表只有一个   
+~~~
+
+![image-20220914161114468](mysql.assets/image-20220914161114468.png)
+
+```mysql
+-- 目标 : 创建一个school数据库
+-- 创建学生表(列,字段)
+-- 学号int 登录密码varchar(20) 姓名,性别varchar(2),出生日期(datatime),家庭住址,email
+-- 创建表之前 , 一定要先选择数据库
+
+--  名字 类型 属性 说明  (每个语句都有,)
+CREATE TABLE IF NOT EXISTS `student` (
+`id` int(4) NOT NULL AUTO_INCREMENT COMMENT "学号",
+`name` varchar(30) NOT NULL DEFAULT "匿名" COMMENT "姓名",
+`pwd` varchar(20) NOT NULL DEFAULT "123456" COMMENT "密码",
+`sex` varchar(2) NOT NULL DEFAULT "男" COMMENT "性别",
+`birthday` datetime DEFAULT NULL COMMENT "生日",
+`address` varchar(100) DEFAULT NULL COMMENT "地址",
+`email` varchar(50) DEFAULT NULL COMMENT "邮箱",
+PRIMARY KEY (`id`)    
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;   
+--主键一般一个表只有一个   
+```
+
+### 1.3 **创建字段 :**
+
+语法:  alter table  `表名` add  `字段名`  该字段的属性
+
+## 2. 删除
+
+### 2.1  数据库 :
+
+语法:   drop database if exists `数据库名`;
+
+### 2.2 删除表 :
+
+语法:    drop table if exists `表名`;
+
+### 2.3 删除字段 :
+
+语法:    alter table 表名  drop  `字段名`				
+
+## 3.使用数据库
+
+**使用数据库 : **   语法:  use `数据库名`;     
+
+## **4.查看**
+
+**查看:**
+
+​			-- 查看所有数据库 
+
+​						  show databases;             **(databases)**
+
+​			-- 查看数据库的定义
+​						show create -`数据库名`;
+
+​			-- 查看数据表的定义
+​						show create  table  ` 表名 `;
+
+​			--显示表结构(显示表有那些字段)
+​					 	desc  `表名`;         
+
+## **5. 修改**
+
+### 5.1 修改表名 : 
+
+语法:   alter table 旧表名 rename as 新表名;
+
+### 5.2 修改字段 :
+
+​		1. 修改字段属性:    alter table  表名  modify  字段名    该字段修改后的属性         
+
+​      2. 修改字段名:      alter table   表名  change  旧字段名  新字段名 旧字段的属性
+
+
+
+## 6. **对表数据的操作**
+
++ #
+
+  + **插入:**   insert into 表名 (字段1,字段2,字段3,...) values('值1'), ('值2', ('值3')
+
+    ps:  ' 字段1,字段2...' 该部分可省略 , 但添加的值务必与表结构,数据列,顺序相对应,且数量一致 .
+
+    ```mysql
+    插入多条数据
+    insert into 表名
+    (字段1,字段2,字段3)
+    values				
+    (值1,值2,值3),
+    (值1,值2,值3),
+    (值1,值2,值3),
+    (值1,值2,值3);
+    ```
+
+    例子:
+
+    ```mysql
+    insert into user
+    (username, password, registerTime)
+    values
+    ("admin", "12345678",1583847118),
+    ("hello", "123456",1583847298);
+    ```
+
+    <img src="mysql.assets/image-20220914161134583.png" alt="image-20220914161134583" style="zoom: 80%;" />
+
+    
+  
+  + **修改:**   update 表名 set 字段名=新值 where  筛选条件;
+
+    例子:
+
+    ```mysql
+    update user set username="world" where password="123456";
+    ```
+  
+    <img src="mysql.assets/image-20220914162943044.png" alt="image-20220914162943044" style="zoom:80%;" />
+
+  + + 例子:
+
+    + ```mysql
+      使用 if 判断，当 sex 为 m 的时候更改为 f，否则就更改为 m（f 改为 m），使用 if(sex="m","f","m") 就可以直接搞定了，实现 SQL 如下。
+      
+      # Write your MySQL query statement below
+      
+  
+    update salary set sex=if(sex="m","f","m");
+  
+    
+  
+  + **删除表内数据 :** 
+  
+    1.  delete from  表名  [  WHERE 筛选条件  ] ;
+  
+       例子:
+  
+       ```mysql
+       DELETE FROM `user` WHERE `id`=2;
+       ```
+  
+    2. truncate  表名;
+  
+       例子:
+  
+       ```mysql
+       TRUNCATE user
+       ```
+  
+       ps: 
+  
+       ```mysql
+       -- 使用TRUNCATE TABLE 重新设置AUTO_INCREMENT计数器
+       -- 使用TRUNCATE TABLE不会对事务有影响 （事务后面会说）
+       ```
+  
+       例子:
+       
+       删除重复[196. 删除重复的电子邮箱](https://leetcode.cn/problems/delete-duplicate-emails/description/)
+       
+       ```mysql
+       DELETE p1 FROM Person p1,
+           Person p2
+       WHERE
+           p1.Email = p2.Email AND p1.Id > p2.Id
+       
+       ```
+       
+       DELETE t1 FROM t1 LEFT JOIN t2 ON t1.id=t2.id WHERE t2.id IS NULL;
+       
+       这种DELETE方式很陌生，竟然和SELETE的写法类似。它涉及到t1和t2两张表，DELETE t1表示要删除t1的一些记录，具体删哪些，就看WHERE条件，满足就删；这里删的是t1表中，跟t2匹配不上的那些记录
+       
+       
+  
+
+## **7. 查询表数据**
+
+**显示表内数据:**  select *  from `表名  `  (一般不用)
+
+例子:  
+
+```mysql
+select * from user;
+```
+
+<img src="mysql.assets/image-20220914161532186.png" alt="image-20220914161532186" style="zoom: 67%;" />
+
+### **7.1  查询**
+
+ select  [  distinct  ]  `字段名`  [ as  别名 ]  from `表名`
+
+```mysql
+SELECT [ALL(默认) | DISTINCT]
+{* | table.* | [table.field1[as alias1][,table.field2[as alias2]][,...]]}
+FROM table_name [as table_alias]
+[left | right | inner join table_name2]  -- 联合查询
+[WHERE ...]  -- 指定结果需满足的条件
+[GROUP BY ...]  -- 指定结果按照哪几个字段来分组
+[HAVING]  -- 过滤分组的记录必须满足的次要条件
+[ORDER BY ...]  -- 指定查询记录按一个或多个条件排序
+[LIMIT {[offset,]row_count | row_countOFFSET offset}];  -- 指定查询的记录从哪条至哪条
+```
+
+AS        起别名    目的: 方便看查询的结果
+
+例子:
+
+```mysql
+select id as 序号, username as 名字 from user;
+```
+
+<img src="mysql.assets/image-20220914161712406.png" alt="image-20220914161712406" style="zoom:67%;" />
+
+distinct  去重  只能针对末字段
+
+例子:
+
+```mysql
+select distinct username from  user;
+```
+
+
+
+**where条件子句:**
+
+==注意使用时要区分字符串还是数字==
+
+作用:   有条件地从表中筛选数据
+
+![image-20220914163620299](mysql.assets/image-20220914163620299.png)
+
+例子:   **id 为奇数** 的，结果请按等级 `rating` 排序
+
+```c++
+//也可以用位判断的方法
+select *
+from cinema
+where id & 1   #判断奇数
+and description <> 'boring'
+order by rating DESC;
+```
+
+可以用 , MOD(x,y) 返回除法操作的余数MySQL 中判断奇数的 6 种方法：
+
+mod(x, 2) = 1 ，如果余数是 1 就是奇数。
+power(-1, x) = -1 ， 如果结果是 -1 就是奇数
+x % 2 = 1 ，如果余数是 1 就是奇数。
+x & 1 = 1 ，如果是 1 就是奇数
+x regexp '[1, 3, 5, 7, 9]$' = 1 如果为 1 就是奇数
+x>>1<<1 != x 如果右移一位在左移一位不等于原值，就是奇数测试
+
+ps:  需要重新写明字段
+
+如:
+
+```mysql
+select name from customer
+where referee_id != 2 or referee_id is null;
+```
+
+
+
+### **7.2 模糊查询**
+
+  select  [  distinct  ]  `字段名`  [ as  别名 ]  from `表名` where  `字段名`  运算符  限制条件
+
+![image-20220727114330724](mysql.assets/image-20220727114330724.png)
+
+注意：
+
+- 数值数据类型的记录之间才能进行算术运算 ;
+- **相同数据类型的数据之间才能进行比较 ;**
+- 空字符串不等于 null,  而是 " ".
+
+
+
+**is NULL 空  和  is not null 不空 :**
+
+ps:   证明了nuLL需要单独判断
+
+```mysql
+-- =============================================
+-- is NULL 空  和  is not null 不空
+-- =============================================
+-- 不能直接写=NULL,这是错误的 , 用 is null   注意:空字符串不等于null
+
+-- 查询出生日期没有填写的同学
+SELECT studentname FROM student
+WHERE BornDate IS NULL;
+
+-- 查询出生日期填写的同学
+SELECT studentname FROM student
+WHERE BornDate IS NOT NULL;
+
+-- 查询没有写家庭住址的同学(空字符串不等于null)
+SELECT studentname FROM student
+WHERE Address='' OR Address IS NULL;
+```
+
+
+
+**like :**
+
+-- like结合使用的通配符 :  
+
++ %    (代表匹配任意长度的字符  相当于....) 
++  _     (代表匹配任意一个字符   相当于.)
+
+```mysql
+-- =============================================
+-- LIKE
+-- =============================================
+-- like结合使用的通配符 :  % (代表0到任意个字符相当于....) 和  _(代表一个字符 相当于.)
+
+-- 查询姓刘的同学的学号及姓名
+SELECT studentno,studentname FROM student
+WHERE studentname LIKE '刘%';
+
+-- 查询姓刘的同学,后面只有一个字的
+SELECT studentno,studentname FROM student
+WHERE studentname LIKE '刘_';
+
+-- 查询姓刘的同学,后面只有两个字的
+SELECT studentno,studentname FROM student
+WHERE studentname LIKE '刘__';
+
+-- 查询姓名中含有 嘉 字的
+SELECT studentno,studentname FROM student
+WHERE studentname LIKE '%嘉%';
+
+-- 查询姓名中含有特殊字符的需要使用转义符号 '\'
+-- 自定义转义符关键字: ESCAPE ':'
+```
+
+
+
+**in 和 not in :** 
+
+--和范围一起用
+
+```mysql
+-- =============================================
+-- IN
+-- =============================================
+-- 范围查询
+
+-- 查询学号为1000,1001,1002的学生姓名
+SELECT studentno,studentname FROM student
+WHERE studentno IN (1000,1001,1002);
+
+-- 查询地址在北京,南京,河南洛阳的学生
+SELECT studentno,studentname,address FROM student
+WHERE address IN ('北京','南京','河南洛阳');
+```
+
+
+
+### 7.3 联表(连接)查询
+
+![](mysql.assets/image-20220914173210576.png)
+例子:
+
+```mysql
+/*
+连接查询
+   如需要多张数据表的数据进行查询,则可通过连接运算符实现多个查询
+   
+内连接 inner join
+   查询两个表中的结果集中的交集
+外连接 outer join
+   左外连接 left join
+       (以左表作为基准,右边表来一一匹配,匹配不上的,返回左表的记录,右表以NULL填充)
+   右外连接 right join
+       (以右表作为基准,左边表来一一匹配,匹配不上的,返回右表的记录,左表以NULL填充)
+       
+等值连接和非等值连接
+
+自连接
+*/
+
+-- 查询参加了考试的同学信息(学号,学生姓名,科目编号,分数)
+SELECT * FROM student;   // 学生表
+SELECT * FROM result;    // 成绩表
+
+
+/*思路:
+(1):分析需求,确定查询的列来源于两个类,student result,连接查询
+(2):确定使用哪种连接查询? 确定交叉点on(内连接),   (两个表中那个数据是相同的)
+*/
+
+SELECT s.studentno,studentname,subjectno,StudentResult
+FROM student s                          -- subjectno在student表里没有
+INNER JOIN result r                      
+ON r.studentno = s.studentno            -- 确定交叉
+
+-- 右连接(也可实现)
+SELECT s.studentno,studentname,subjectno,StudentResult
+FROM student s
+RIGHT JOIN result r
+ON r.studentno = s.studentno
+
+-- 等值连接
+SELECT s.studentno,studentname,subjectno,StudentResult
+FROM student s , result r
+WHERE r.studentno = s.studentno         -- 等值查询
+
+-- 左连接 (查询了所有同学,不考试的也会查出来)  // 满足一个条件的都会找出来
+SELECT s.studentno,studentname,subjectno,StudentResult
+FROM student s
+LEFT JOIN result r
+ON r.studentno = s.studentno
+
+-- 查一下缺考的同学(左连接应用场景)
+SELECT s.studentno,studentname,subjectno,StudentResult
+FROM student s
+LEFT JOIN result r
+ON r.studentno = s.studentno
+WHERE StudentResult IS NULL
+```
+
+
+
+### 7.4 排序和分页
+
+**降序排序:**   
+
+语法:  select  [  distinct  ]  `字段名`  [ as  别名 ]  from `表名` where  `字段名`  运算符  限制条件  order by  `字段名`   desc(不写默认升序)  
+
+```mysql
+/*============== 排序 ================
+语法 : ORDER BY
+   ORDER BY 语句用于根据指定的列对结果集进行排序。
+   ORDER BY 语句默认按照ASC升序对记录进行排序。
+   如果您希望按照降序对记录进行排序，可以使用 DESC 关键字。
+   
+*/
+
+-- 查询 数据库结构-1 的所有考试结果(学号 学生姓名 科目名称 成绩)
+-- 按成绩降序排序
+SELECT s.studentno,studentname,subjectname,StudentResult
+FROM student s
+INNER JOIN result r
+ON r.studentno = s.studentno
+INNER JOIN `subject` sub
+ON r.subjectno = sub.subjectno
+WHERE subjectname='数据库结构-1'
+ORDER BY StudentResult DESC         // 降序
+```
+
+
+
+**分页:**  
+
+语法:  select  [  distinct  ]  `字段名`  [ as  别名 ]  from `表名` where  `字段名`  运算符  限制条件  order by  `字段名`   desc
+
+limit   (页码 - 1)*单页显示条数,  单页显示条数
+
+ps: `LIMIT` 语句也可以只使用一个参数，这个参数的含义是从结果的第一行开始返回的行数。所以 `LIMIT 1` 会返回第一行的记录。
+
+```mysql
+翻页原理: 40条 n = (page * 40)-40;
+select * from student 
+limit 0,40;
+select * from student 
+limit 40,40;
+select * from student 
+limit 80,40;
+```
+
+例子2:
+
+```mysql
+/*============== 分页 ================
+语法 : SELECT * FROM table LIMIT [offset,] rows | rows OFFSET offset
+好处 : (用户体验,网络传输,查询压力)
+
+推导:
+   第一页 : limit 0,5
+   第二页 : limit 5,5
+   第三页 : limit 10,5
+   ......
+   第N页 : limit (页码-1)*单页条数, 单页条数
+   // 0 1 2 3  * 单页数
+   [pageNo:页码, pageSize:单页面显示条数]
+      起始值 , 单页面显示条数
+      总页数 = 数据总数 - 页面大小
+*/
+
+
+
+-- 每页显示5条数据
+SELECT s.studentno,studentname,subjectname,StudentResult
+FROM student s
+INNER JOIN result r
+ON r.studentno = s.studentno
+INNER JOIN `subject` sub
+ON r.subjectno = sub.subjectno
+WHERE subjectname='数据库结构-1'
+ORDER BY StudentResult DESC , studentno
+LIMIT 0,5                                       
+```
+
+
+
+###  **7.5 group by  分组**
+
+**,    满足条件的分成一组,  然后再组内进行其他操作**
+
+![image-20221005224052535](mysql.assets/image-20221005224052535.png)
+
+例子:
+
+输入: 
+Orders 表:
++--------------+-----------------+
+| order_number | customer_number |
++--------------+-----------------+
+| 1            | 1               |
+| 2            | 2               |
+| 3            | 3               |
+| 4            | 3               |
++--------------+-----------------+
+输出: 
++-----------------+
+| customer_number |
++-----------------+
+| 3               |
++-----------------+
+
+```mysql
+SELECT customer_number
+FROM orders
+GROUP BY customer_number
+ORDER BY COUNT(*) DESC
+LIMIT 1;
+```
+
+
+
+例子2:
+
+输入: 
+Courses table:
++---------+----------+
+| student | class    |
++---------+----------+
+| A       | Math     |
+| B       | English  |
+| C       | Math     |
+| D       | Biology  |
+| E       | Math     |
+| F       | Computer |
+| G       | Math     |
+| H       | Math     |
+| I       | Math     |
++---------+----------+
+输出: 
++---------+ 
+| class   | 
++---------+ 
+| Math    | 
++---------+
+
+```mysql
+select class 
+from Courses
+group by class
+having  COUNT(*) >= 5;   //分组 并且 找到>=5的
+```
+
+
+
+
+
+
+
+
+
+###  7.6 聚合函数(常用)
+
+| 函数名称       | 描述                                                         |
+| -------------- | ------------------------------------------------------------ |
+| count( 主键/1) | 计算的记录总和数， 如 select count(1) 【不建议使用 *，效率低】 |
+| sum()          | 返回数字字段或表达式列作统计，返回一列的总和。               |
+| vag()          | 通常为数值字段或表达列作统计，返回一列的平均值               |
+| max()          | 可以为数值字段，字符字段或表达式列作统计，返回最大的值。     |
+| min()          | 可以为数值字段，字符字段或表达式列作统计，返回最小的值。     |
+
+
+
+
+
+# ==DML语言(对表的数据操作)==
 
 ### 外键  FOREIGN KEY
 
@@ -494,14 +1130,14 @@ ALTER TABLE student DROP INDEX FK_gradeid;
 
 
 
-### 添加数据
+#### 添加数据
 
 > INSERT命令   -- 默认添加到末尾
 
 **语法：**
 
 ```mysql
-INSERT INTO 表名[(字段1,字段2,字段3,...)] VALUES('值1'), ('值2', ('值3')
+INSERT INTO 表名 (字段1,字段2,字段3,...) VALUES('值1'), ('值2', ('值3')
 ```
 
 **![image-20220729171819170](mysql.assets/image-20220729171819170.png)**
@@ -547,7 +1183,7 @@ INSERT INTO grade(gradename) VALUES ('大三'),('大四');
 
 
 
-### 修改数据
+#### 修改数据
 
 > update   命令  表名  set  原来的值 = 新值  限制
 
@@ -581,12 +1217,14 @@ UPDATE 表名 SET column_name=value[,column_name2=value2,...] [WHERE condition];
 
 ```mysql
 -- 修改年级信息
-UPDATE grade SET gradename = '高中' WHERE gradeid = 1;
+UPDATE grade SET `gradename` = '高中' WHERE gradeid = 1;
+
+UPDATE `pople` SET `zf`="sb" WHERE `id` = 2;
 ```
 
 
 
-### 删除数据
+#### 删除数据内容
 
 > DELETE命令   -- 删除表的数据
 
@@ -603,6 +1241,8 @@ DELETE FROM 表名 [WHERE condition];
 ```mysql
 -- 删除最后一个数据
 DELETE FROM grade WHERE gradeid = 5
+
+DELETE FROM `pople` WHERE `id`=2;
 ```
 
 
@@ -630,6 +1270,10 @@ TRUNCATE grade
 
 - - **使用TRUNCATE TABLE 重新设置AUTO_INCREMENT计数器**
   - 使用TRUNCATE TABLE不会对事务有影响 （事务后面会说）
+
+----------------------
+
+
 
 测试：
 
@@ -663,7 +1307,7 @@ TRUNCATE TABLE test;
 
 
 
-#  DQL语言(重点)
+#  ==DQL语言(查询)==
 
 **DQL( Data Query Language 数据查询语言 )**
 
@@ -706,11 +1350,11 @@ FROM table_name [as table_alias]
 ```mysql
 -- 查询表中所有的数据列结果 , 采用 **" \* "** 符号; 但是效率低，不推荐 .
 
--- 查询所有学生信息
+-- 显示表信息
 SELECT * FROM student;
 
 -- 查询指定列(学号 , 姓名)
-SELECT studentno,studentname FROM student;
+SELECT `studentno`,`studentname` FROM `student`;
 ```
 
 ### AS 子句作为别名   -- 方便看查询的结果
@@ -753,7 +1397,7 @@ SELECT CONCAT('姓名:',studentname) AS 新姓名 FROM student;
 
 
 
-###  去重  DISTINCT关键字的使用     
+###  去重  DISTINCT关键字的使用
 
 > 去重  DISTINCT关键字的使用      
 
@@ -805,11 +1449,7 @@ SELECT DISTINCT studentno FROM result; -- 了解:DISTINCT 去除重复项 , (默
   SELECT studentno,StudentResult+1 AS '提分后' FROM result;
   ```
 
-  
-
-  
-
-  创建的表
+  例子:
 
   ```mysql
   -- 创建年级表
@@ -840,14 +1480,14 @@ SELECT DISTINCT studentno FROM result; -- 了解:DISTINCT 去除重复项 , (默
       key `subjectno` (`subjectno`)
   )engine = innodb default charset = utf8;
   ```
-
+  
   ![image-20220727113226819](mysql.assets/image-20220727113226819.png)
-
+  
 - **避免SQL返回结果中包含 ' . ' , ' * ' 和括号等干扰开发语言程序.**
 
 
 
-### where  条件语句在其中的作用
+### ==where  条件语句在其中的作用==
 
 作用：用于检索数据表中 符合条件 的记录
 
@@ -858,6 +1498,19 @@ SELECT DISTINCT studentno FROM result; -- 了解:DISTINCT 去除重复项 , (默
 mysql 就尽量用 英文的
 
 ![图片](mysql.assets/640-165872135720518.png)
+
+
+
+例子:   **id 为奇数** 的，结果请按等级 `rating` 排序
+
+```c++
+//也可以用位判断的方法
+select *
+from cinema
+where id & 1 
+and description <> 'boring'
+order by rating DESC;
+```
 
 测试
 
@@ -899,13 +1552,19 @@ WHERE NOT studentno=1000;
 
 > 模糊查询 ：比较操作符   (重要)                   where 字段 link "限制条件"
 
+**注意 :  a 一定是一个字段**
+
 ![image-20220727114330724](mysql.assets/image-20220727114330724.png)
 
-link 和通配符
+like  (来可)  和通配符一起用
 
 in 和范围
 
+**不能直接写=NULL , 这是代表错误的 , 用 is null  和 空字符串不等于 null**
 
+```mysql
+SELECT `id` FROM `pople` WHERE `zf` IS NULL; 
+```
 
 注意：
 
@@ -980,7 +1639,7 @@ WHERE Address='' OR Address IS NULL;
 
 
 
-### 链表(连接)查询
+### 联表(连接)查询
 
 > JOIN 对比
 
@@ -1005,6 +1664,62 @@ subject
 <img src="mysql.assets/image-20220729095556174.png" alt="image-20220729095556174" style="zoom:80%;" />
 
 
+
+```
+
+-- 表:
+
+create database if not exists `school`;
+-- 创建一个school数据库
+use `school`;-- 创建学生表
+drop table if exists `student`;
+create table `student`(
+	`studentno` int(4) not null comment '学号',
+    `loginpwd` varchar(20) default null,
+    `studentname` varchar(20) default null comment '学生姓名',
+    `sex` tinyint(1) default null comment '性别，0或1',
+    `gradeid` int(11) default null comment '年级编号',
+    `phone` varchar(50) not null comment '联系电话，允许为空',
+    `address` varchar(255) not null comment '地址，允许为空',
+    `borndate` datetime default null comment '出生时间',
+    `email` varchar (50) not null comment '邮箱账号允许为空',
+    `identitycard` varchar(18) default null comment '身份证号',
+    primary key (`studentno`),
+    unique key `identitycard`(`identitycard`),
+    key `email` (`email`)
+)engine=myisam default charset=utf8;
+
+-- 创建年级表
+drop table if exists `grade`;
+create table `grade`(
+  `gradeid` int(11) not null auto_increment comment '年级编号',
+  `gradename` varchar(50) not null comment '年级名称',
+    primary key (`gradeid`)
+) engine=innodb auto_increment = 6 default charset = utf8;
+
+-- 创建科目表
+drop table if exists `subject`;
+create table `subject`(
+	`subjectno`int(11) not null auto_increment comment '课程编号',
+    `subjectname` varchar(50) default null comment '课程名称',
+    `classhour` int(4) default null comment '学时',
+    `gradeid` int(4) default null comment '年级编号',
+    primary key (`subjectno`)
+)engine = innodb auto_increment = 19 default charset = utf8;
+
+-- 创建成绩表
+drop table if exists `result`;
+create table `result`(
+	`studentno` int(4) not null comment '学号',
+    `subjectno` int(4) not null comment '课程编号',
+    `examdate` datetime not null comment '考试日期',
+    `studentresult` int (4) not null comment '考试成绩',
+    key `subjectno` (`subjectno`)
+)engine = innodb default charset = utf8;
+
+```
+
+![](mysql.assets/image-20220914173222670.png)
 
 ```mysql
 /*
@@ -1031,12 +1746,12 @@ SELECT * FROM result;    // 成绩表
 
 /*思路:
 (1):分析需求,确定查询的列来源于两个类,student result,连接查询
-(2):确定使用哪种连接查询? 确定交叉点on(内连接)
+(2):确定使用哪种连接查询? 确定交叉点on(内连接),   (两个表中那个数据是相同的)
 */
 SELECT s.studentno,studentname,subjectno,StudentResult
-FROM student s
-INNER JOIN result r
-ON r.studentno = s.studentno
+FROM student s                          -- subjectno在student表里没有
+INNER JOIN result r                      
+ON r.studentno = s.studentno            -- 确定交叉
 
 -- 右连接(也可实现)
 SELECT s.studentno,studentname,subjectno,StudentResult
@@ -1047,7 +1762,7 @@ ON r.studentno = s.studentno
 -- 等值连接
 SELECT s.studentno,studentname,subjectno,StudentResult
 FROM student s , result r
-WHERE r.studentno = s.studentno
+WHERE r.studentno = s.studentno         -- 等值查询
 
 -- 左连接 (查询了所有同学,不考试的也会查出来)
 SELECT s.studentno,studentname,subjectno,StudentResult
@@ -1061,15 +1776,28 @@ FROM student s
 LEFT JOIN result r
 ON r.studentno = s.studentno
 WHERE StudentResult IS NULL
+```
 
+
+
+
+
+例子2:
+
+![image-20220731113831692](mysql.assets/image-20220731113831692.png)
+
+```mysql
+-- 三张表
 -- 查询参加了考试的同学信息(学号,学生姓名,科目名,分数)
 SELECT s.studentno,studentname,subjectname,StudentResult
 FROM student s
 INNER JOIN result r
-ON r.studentno = s.studentno
-INNER JOIN `subject` sub
+ON r.studentno = s.studentno    
+INNER JOIN `subject` sub             -- 得到字段subjectname
 ON sub.subjectno = r.subjectno
 ```
+
+
 
 右连接:
 
@@ -1242,7 +1970,6 @@ WHERE subjectname='数据库结构-1'
    
 */
 
-
 -- 查询 数据库结构-1 的所有考试结果(学号 学生姓名 科目名称 成绩)
 -- 按成绩降序排序
 SELECT s.studentno,studentname,subjectname,StudentResult
@@ -1252,7 +1979,7 @@ ON r.studentno = s.studentno
 INNER JOIN `subject` sub
 ON r.subjectno = sub.subjectno
 WHERE subjectname='数据库结构-1'
-ORDER BY StudentResult DESC
+ORDER BY StudentResult DESC         // 降序
 
 
 /*============== 分页 ================
@@ -1264,7 +1991,8 @@ ORDER BY StudentResult DESC
    第二页 : limit 5,5
    第三页 : limit 10,5
    ......
-   第N页 : limit (pageNo-1)*pageSzie, pageSzie
+   第N页 : limit (页码-1)*单页条数, 单页条数
+   // 0 1 2 3  * 单页数
    [pageNo:页码, pageSize:单页面显示条数]
       起始值 , 单页面显示条数
       总页数 = 数据总数 - 页面大小
@@ -1386,7 +2114,7 @@ SELECT studentno,studentname FROM student WHERE studentno IN(
 **数据函数**
 
 ```mysql
- SELECT ABS(-8);  /*绝对值*/
+ SELECT ABS(-8);      /*绝对值*/
  SELECT CEILING(9.4); /*向上取整*/
  SELECT FLOOR(9.4);   /*向下取整*/
  SELECT RAND();  /*随机数,返回一个0-1之间的随机数*/
@@ -1418,9 +2146,9 @@ SELECT studentno,studentname FROM student WHERE studentno IN(
 
 ```mysql
  SELECT CURRENT_DATE();   /*获取当前日期*/
+ SELECT NOW();   /*获取当前日期和时间*/
  
  SELECT CURDATE();   /*获取当前日期*/
- SELECT NOW();   /*获取当前日期和时间*/
  SELECT LOCALTIME();   /*获取当前日期和时间*/
  SELECT SYSDATE();   /*获取当前日期和时间*/
  
@@ -1452,12 +2180,15 @@ SELECT studentno,studentname FROM student WHERE studentno IN(
 | MAX()    | 可以为数值字段，字符字段或表达式列作统计，返回最大的值。     |
 | MIN()    | 可以为数值字段，字符字段或表达式列作统计，返回最小的值。     |
 
+ps: 不能包含用
+
  **查询**
 
 ```mysql
  /*COUNT:非空的*/
  SELECT COUNT(studentname) FROM student;
  SELECT COUNT(*) FROM student;
+ 
  SELECT COUNT(1) FROM student;   /*推荐*/
 ```
 
@@ -1478,7 +2209,7 @@ SELECT studentno,studentname FROM student WHERE studentno IN(
 
 ---------------
 
-**-统计**
+**统计**
 
 ```mysql
  SELECT SUM(StudentResult) AS 总和 FROM result;
@@ -1647,7 +2378,7 @@ MD5即Message-Digest Algorithm 5（信息-摘要算法5），用于确保信息�
 
 > 什么是事务
 
-- 事务就是将一组SQL语句放在同一批次内去执行
+- 事务就是将一组SQL语句放在同一批次内去执行事务就是将一组SQL语句放在同一批次内去执行
 - **如果一个SQL语句出错,则该批次内的所有SQL都将被取消执行**
 - MySQL事务处理只支持InnoDB和BDB数据表类型
 
@@ -1687,6 +2418,8 @@ MD5即Message-Digest Algorithm 5（信息-摘要算法5），用于确保信息�
 
 -------
 
+![image-20220802102718322](mysql.assets/image-20220802102718322.png)
+
 ## 基本语法
 
 ==注意:==
@@ -1706,7 +2439,7 @@ SET autocommit = 1;   /*开启(默认的)*/
 --- 2.使用事务时应先关闭自动提交
 
 -- 开始一个事务,标记事务的起始点
-START TRANSACTION  
+START TRANSACTION              -- n.交易，买卖，业务；
 
 -- 提交一个事务给数据库
 COMMIT
@@ -1728,9 +2461,8 @@ RELEASE SAVEPOINT 保存点名称 -- 删除保存点
 
 > 测试
 
-```
+```mysql
 /*
-课堂测试题目
 
 A在线买一款价格为500元商品,网上银行转账.
 A的银行卡余额为2000,然后给商家B支付500.
@@ -1739,9 +2471,11 @@ A的银行卡余额为2000,然后给商家B支付500.
 创建数据库shop和创建表account并插入2条数据
 */
 
-CREATE DATABASE `shop`CHARACTER SET utf8 COLLATE utf8_general_ci;
+-- 创建数据库shop
+CREATE DATABASE `shop` CHARACTER SET utf8 COLLATE utf8_general_ci;
 USE `shop`;
 
+-- 创建表account
 CREATE TABLE `account` (
 `id` INT(11) NOT NULL AUTO_INCREMENT,
 `name` VARCHAR(32) NOT NULL,
@@ -1752,19 +2486,29 @@ PRIMARY KEY (`id`)
 INSERT INTO account (`name`,`cash`)
 VALUES('A',2000.00),('B',10000.00)
 
+-- 事务操作
 -- 转账实现
 SET autocommit = 0; -- 关闭自动提交
 START TRANSACTION;  -- 开始一个事务,标记事务的起始点
+
 UPDATE account SET cash=cash-500 WHERE `name`='A';
 UPDATE account SET cash=cash+500 WHERE `name`='B';
-COMMIT; -- 提交事务
-# rollback;
+
+COMMIT; -- 提交事务  -- 一旦提交就持久化了
+ROLLBACK; -- 回滚
+
 SET autocommit = 1; -- 恢复自动提交
 ```
+
+![image-20220802111339403](mysql.assets/image-20220802111339403.png)
+
+----------------
 
 
 
 ## 索引
+
+![image-20220802104036534](mysql.assets/image-20220802104036534.png)
 
 > 索引的作用
 
@@ -1777,30 +2521,34 @@ SET autocommit = 1; -- 恢复自动提交
 > 分类
 
 - 主键索引 (Primary Key)
+
 - 唯一索引 (Unique)
+
 - 常规索引 (Index)
+
 - 全文索引 (FullText)
 
-> 主键索引
+
+### 主键索引
 
 主键 : 某一个属性组能唯一标识一条记录
 
 特点 :
 
 - 最常见的索引类型
-- 确保数据记录的唯一性
+- 确保数据记录的**唯一性**
 - 确定特定数据记录在数据库中的位置
 
-> 唯一索引
+### 唯一索引
 
 作用 : 避免同一个表中某数据列中的值重复
 
 与主键索引的区别
 
 - 主键索引只能有一个
-- 唯一索引可能有多个
+- **唯一索引可能有多个**
 
-```
+```mysql
 CREATE TABLE `Grade`(
   `GradeID` INT(11) AUTO_INCREMENT PRIMARYKEY,
   `GradeName` VARCHAR(32) NOT NULL UNIQUE
@@ -1808,17 +2556,17 @@ CREATE TABLE `Grade`(
 )
 ```
 
-> 常规索引
+### 常规索引
 
 作用 : 快速定位特定数据
 
 注意 :
 
-- index 和 key 关键字都可以设置常规索引
+- **index 和 key 关键字都可以设置常规索引**
 - 应加在查询找条件的字段
 - 不宜添加太多常规索引,影响数据的插入,删除和修改操作
 
-```
+```mysql
 CREATE TABLE `result`(
    -- 省略一些代码
   INDEX/KEY `ind` (`studentNo`,`subjectNo`) -- 创建表时添加
@@ -1827,26 +2575,34 @@ CREATE TABLE `result`(
 ALTER TABLE `result` ADD INDEX `ind`(`studentNo`,`subjectNo`);
 ```
 
-> 全文索引
+### 全文索引
 
 百度搜索：全文索引
 
-作用 : 快速定位特定数据
+**作用 : 快速定位特定数据**
 
 注意 :
 
 - 只能用于MyISAM类型的数据表
 - 只能用于CHAR , VARCHAR , TEXT数据列类型
-- 适合大型数据集
+- **适合大型数据集**
 
-```
+----------------
+
+
+
+**==索引的使用==**
+
+```mysql
 /*
 #方法一：创建表时
   　　CREATE TABLE 表名 (
                字段名1 数据类型 [完整性约束条件…],
                字段名2 数据类型 [完整性约束条件…],
+               
                [UNIQUE | FULLTEXT | SPATIAL ]   INDEX | KEY
                [索引名] (字段名[(长度)] [ASC |DESC])
+               
                );
 
 
@@ -1859,19 +2615,19 @@ ALTER TABLE `result` ADD INDEX `ind`(`studentNo`,`subjectNo`);
        ALTER TABLE 表名 ADD [UNIQUE | FULLTEXT | SPATIAL ] INDEX
                             索引名 (字段名[(长度)] [ASC |DESC]) ;
                            
-                           
-#删除索引：DROP INDEX 索引名 ON 表名字;
-#删除主键索引: ALTER TABLE 表名 DROP PRIMARY KEY;
-
 
 #显示索引信息: SHOW INDEX FROM student;
+#删除索引：DROP INDEX 索引名 ON 表名字;
+#删除主键索引: ALTER TABLE 表名 DROP PRIMARY KEY;
 */
+
+
 
 /*增加全文索引*/
 ALTER TABLE `school`.`student` ADD FULLTEXT INDEX `studentname` (`StudentName`);
 
-/*EXPLAIN : 分析SQL语句执行性能*/
-EXPLAIN SELECT * FROM student WHERE studentno='1000';
+
+
 
 /*使用全文索引*/
 -- 全文搜索通过 MATCH() 函数完成。
@@ -1888,11 +2644,27 @@ MySQL 5.6 及以后的版本，MyISAM 和 InnoDB 存储引擎均支持全文索�
 */
 ```
 
-> 拓展：测试索引
+
+
+/*EXPLAIN : 分析SQL语句执行性能*/
+
+```
+EXPLAIN SELECT * FROM student WHERE studentno='1000';  -- 设置了全文索引
+```
+
+![image-20220802105347865](mysql.assets/image-20220802105347865.png)
+
+---------
+
+
+
+
+
+### 拓展：测试索引
 
 **建表app_user：**
 
-```
+```mysql
 CREATE TABLE `app_user` (
 `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 `name` varchar(50) DEFAULT '' COMMENT '用户昵称',
@@ -1904,12 +2676,13 @@ CREATE TABLE `app_user` (
 `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
 `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 PRIMARY KEY (`id`)
+    
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='app用户表'
 ```
 
 **批量插入数据：100w**
 
-```
+```mysql
 DROP FUNCTION IF EXISTS mock_data;
 DELIMITER $$
 CREATE FUNCTION mock_data()
@@ -1929,71 +2702,24 @@ SELECT mock_data();
 
 **索引效率测试**
 
-无索引
-
-```
-SELECT * FROM app_user WHERE name = '用户9999'; -- 查看耗时
-SELECT * FROM app_user WHERE name = '用户9999';
-SELECT * FROM app_user WHERE name = '用户9999';
-
-mysql> EXPLAIN SELECT * FROM app_user WHERE name = '用户9999'\G
-*************************** 1. row ***************************
-          id: 1
-select_type: SIMPLE
-       table: app_user
-  partitions: NULL
-        type: ALL
-possible_keys: NULL
-        key: NULL
-    key_len: NULL
-        ref: NULL
-        rows: 992759
-    filtered: 10.00
-      Extra: Using where
-1 row in set, 1 warning (0.00 sec)
-```
-
 创建索引
 
-```
+```;
 CREATE INDEX idx_app_user_name ON app_user(name);
 ```
 
-测试普通索引
+测试无索引 和  普通索引 :
 
-```
-mysql> EXPLAIN SELECT * FROM app_user WHERE name = '用户9999'\G
-*************************** 1. row ***************************
-          id: 1
-select_type: SIMPLE
-       table: app_user
-  partitions: NULL
-        type: ref
-possible_keys: idx_app_user_name
-        key: idx_app_user_name
-    key_len: 203
-        ref: const
-        rows: 1
-    filtered: 100.00
-      Extra: NULL
-1 row in set, 1 warning (0.00 sec)
+![image-20220802110948391](mysql.assets/image-20220802110948391.png)
 
-mysql> SELECT * FROM app_user WHERE name = '用户9999';
-1 row in set (0.00 sec)
 
-mysql> SELECT * FROM app_user WHERE name = '用户9999';
-1 row in set (0.00 sec)
 
-mysql> SELECT * FROM app_user WHERE name = '用户9999';
-1 row in set (0.00 sec)
-```
+### 索引准则
 
-> 索引准则
-
-- 索引不是越多越好
-- 不要对经常变动的数据加索引
-- 小数据量的表建议不要加索引
-- 索引一般应加在查找条件的字段
+- **索引不是越多越好**
+- **不要对经常变动的数据加索引**
+- **小数据量的表建议不要加索引**   
+- **索引一般应加在查找条件的字段**
 
 > 索引的数据结构
 
@@ -2016,20 +2742,28 @@ Archive 不支持事务，支持表级别锁定，不支持 B-tree、Hash、Full
 
 #  用户管理
 
-> 使用SQLyog 创建用户，并授予权限演示
+## 基本操作
 
-![图片](mysql.assets/640-165872151807222.png)
+> 使用SQLyog 创建用户
 
-> 基本命令
+![image-20220802111732772](mysql.assets/image-20220802111732772.png)
 
-```
+---
+
+
+
+
+
+> 使用sql命令操作
+
+```mysql
 /* 用户和权限管理 */ ------------------
 用户信息表：mysql.user
 
 -- 刷新权限
-FLUSH PRIVILEGES
+FLUSH PRIVILEGES      -- flush privileges
 
--- 增加用户 CREATE USER kuangshen IDENTIFIED BY '123456'
+-- 创建(增加)用户 CREATE USER kuangshen IDENTIFIED BY '123456'
 CREATE USER 用户名 IDENTIFIED BY [PASSWORD] 密码(字符串)
   - 必须拥有mysql数据库的全局CREATE USER权限，或拥有INSERT权限。
   - 只能创建用户，不能赋予权限。
@@ -2037,8 +2771,8 @@ CREATE USER 用户名 IDENTIFIED BY [PASSWORD] 密码(字符串)
   - 密码也需引号，纯数字密码也要加引号
   - 要在纯文本中指定密码，需忽略PASSWORD关键词。要把密码指定为由PASSWORD()函数返回的混编值，需包含关键字PASSWORD
 
--- 重命名用户 RENAME USER kuangshen TO kuangshen2
-RENAME USER old_user TO new_user
+-- 重命名用户 RENAME USER 原名字 TO 新名字
+RENAME USER old_user TO new_user          -- readme 
 
 -- 设置密码
 SET PASSWORD = PASSWORD('密码')    -- 为当前用户设置密码
@@ -2047,18 +2781,22 @@ SET PASSWORD FOR 用户名 = PASSWORD('密码')    -- 为指定用户设置密�
 -- 删除用户 DROP USER kuangshen2
 DROP USER 用户名
 
--- 分配权限/添加用户
-GRANT 权限列表 ON 表名 TO 用户名 [IDENTIFIED BY [PASSWORD] 'password']
+
+----------------- 权限----------------------------
+
+-- 分配权限/添加用户  -- grant 授权
+GRANT 权限列表 ON 表名 TO 用户名 [IDENTIFIED BY [PASSWORD] 'password']  
   - all privileges 表示所有权限
-  - *.* 表示所有库的所有表
+  - *.* 表示所有库的所有表, 除了给别人授权.
   - 库名.表名 表示某库下面的某表
 
 -- 查看权限   SHOW GRANTS FOR root@localhost;
 SHOW GRANTS FOR 用户名
-   -- 查看当前用户权限
-  SHOW GRANTS; 或 SHOW GRANTS FOR CURRENT_USER; 或 SHOW GRANTS FOR CURRENT_USER();
+ -- 查看当前用户权限
+SHOW GRANTS;
+或 SHOW GRANTS FOR CURRENT_USER; 或 SHOW GRANTS FOR CURRENT_USER();
 
--- 撤消权限
+-- 撤消权限  -- revoke 撤销
 REVOKE 权限列表 ON 表名 FROM 用户名
 REVOKE ALL PRIVILEGES, GRANT OPTION FROM 用户名    -- 撤销所有权限
 ```
@@ -2110,7 +2848,7 @@ OPTIMIZE [LOCAL | NO_WRITE_TO_BINLOG] TABLE tbl_name [, tbl_name] ...
 
 
 
-### MySQL备份
+## MySQL备份
 
 数据库备份必要性
 
@@ -2119,43 +2857,56 @@ OPTIMIZE [LOCAL | NO_WRITE_TO_BINLOG] TABLE tbl_name [, tbl_name] ...
 
 MySQL数据库备份方法
 
-- mysqldump备份工具
-- 数据库管理工具,如SQLyog
+- **数据库管理工具,如SQLyog**
+  + <img src="mysql.assets/image-20220802113315301.png" alt="image-20220802113315301" style="zoom: 50%;" />
+
 - 直接拷贝数据库文件和相关配置文件
 
-**mysqldump客户端**
++  **命令行的方式 :  mysqldump备份工具**
 
 作用 :
 
 - 转储数据库
 - 搜集数据库进行备份
 - 将数据转移到另一个SQL服务器,不一定是MySQL服务器
+- 别人要,给sql文件即可
 
 ![图片](mysql.assets/640-165872151807223.png)
 
-```
+
+
 -- 导出
-1. 导出一张表 -- mysqldump -uroot -p123456 school student >D:/a.sql
-　　mysqldump -u用户名 -p密码 库名 表名 > 文件名(D:/a.sql)
-2. 导出多张表 -- mysqldump -uroot -p123456 school student result >D:/a.sql
-　　mysqldump -u用户名 -p密码 库名 表1 表2 表3 > 文件名(D:/a.sql)
-3. 导出所有表 -- mysqldump -uroot -p123456 school >D:/a.sql
+
+```wls
+1. 导出一张表 或者 多张表 -- mysqldump -uroot -p123456 school student result >D:/a.sql
+　　mysqldump -u用户名 -p密码 库名 表1 (表2 表3) > 文件名(D:/a.sql)
+　　
+2. 导出所有表 -- mysqldump -uroot -p123456 school >D:/a.sql
 　　mysqldump -u用户名 -p密码 库名 > 文件名(D:/a.sql)
-4. 导出一个库 -- mysqldump -uroot -p123456 -B school >D:/a.sql
+　　
+3. 导出一个库 -- mysqldump -uroot -p123456 -B school >D:/a.sql
 　　mysqldump -u用户名 -p密码 -B 库名 > 文件名(D:/a.sql)
 
 可以-w携带备份条件
+```
 
 -- 导入
-1. 在登录mysql的情况下：-- source D:/a.sql
+
+```wls
+1. 在登录mysql的情况下：-- source D:/a.sql       (推荐)
 　　source 备份文件
+　　
 2. 在不登录的情况下
 　　mysql -u用户名 -p密码 库名 < 备份文件
 ```
 
 
 
-## 规范化数据库设计
+-------------------------
+
+
+
+# 规范化数据库设计
 
 ### 为什么需要数据库设计
 
@@ -2178,21 +2929,28 @@ MySQL数据库备份方法
 - 需求分析阶段: 分析客户的业务和数据处理需求
 - 概要设计阶段:设计数据库的E-R模型图 , 确认需求信息的正确和完整.
 
+
+
 **设计数据库步骤**
 
 - 收集信息
-
 - - 与该系统有关人员进行交流 , 座谈 , 充分了解用户需求 , 理解数据库需要完成的任务.
-
 - 标识实体[Entity]
-
-- 
-
 - - 标识数据库要管理的关键对象或实体,实体一般是名词
-
 - 标识每个实体需要存储的详细信息[Attribute]
-
 - 标识实体之间的关系[Relationship]
+
+-------
+
+![image-20220802160723166](mysql.assets/image-20220802160723166.png)
+
+![image-20220802160711261](mysql.assets/image-20220802160711261.png)
+
+
+
+-------------
+
+
 
 
 
@@ -2220,21 +2978,43 @@ MySQL数据库备份方法
 
 第一范式的目标是确保每列的原子性,如果每列都是不可再分的最小数据单元,则满足第一范式
 
+**保证每一列不可再分**
+
+![image-20220802161334504](mysql.assets/image-20220802161334504.png)
+
+
+
 **第二范式(2nd NF)**
 
 第二范式（2NF）是在第一范式（1NF）的基础上建立起来的，即满足第二范式（2NF）必须先满足第一范式（1NF）。
 
-第二范式要求每个表只描述一件事情
+第二范式要求**每个表只描述一件事情**
+
+![image-20220802161524610](mysql.assets/image-20220802161524610.png)**一个订单可能有不同的产品，需要和产品号联合组成，所以产品价格这些都是关联订单的，但是订单总金额+时间只跟订单有关，跟产品无关**
+
+
+
+
 
 **第三范式(3rd NF)**
+
+**一对多关系中必须将多的一方分离到一张单独的表然后通过主键关联**
 
 如果一个关系满足第二范式,并且除了主键以外的其他列都不传递依赖于主键列,则满足第三范式.
 
 第三范式需要确保数据表中的每一列数据都和主键直接相关，而不能间接相关。
 
+![image-20220802161804717](mysql.assets/image-20220802161804717.png)
 
 
-**规范化和性能的关系**
+
+增删少，查询多。增删是一锤子买卖，查询会反复多次进行
+
+
+
+**规范化 和  性能的关系**
+
+需求>性能>表结构
 
 为满足某种商业目标 , 数据库性能比规范化数据库更重要
 
@@ -2243,3 +3023,11 @@ MySQL数据库备份方法
 通过在给定的表中添加额外的字段,以大量减少需要从中搜索信息所需的时间
 
 通过在给定的表中插入计算列,以方便查询
+
+----------
+
+
+
+[在vscode上使用MySQL - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/107726324)
+
+[(28条消息) vscode 下使用mysql_antRain的博客-CSDN博客_mysql vscode](https://blog.csdn.net/qq_41146650/article/details/103202832)

@@ -1,0 +1,33 @@
+﻿  main.c
+C:\Users\16658\Desktop\mysql\code\mysql\main.c(8,30): warning C4090: “函数”: 不同的“const”限定符
+C:\Users\16658\Desktop\mysql\code\mysql\main.c(10,56): warning C4090: “函数”: 不同的“const”限定符
+C:\Users\16658\Desktop\mysql\code\mysql\main.c(14,30): warning C4090: “函数”: 不同的“const”限定符
+C:\Users\16658\Desktop\mysql\code\mysql\main.c(16,56): warning C4090: “函数”: 不同的“const”限定符
+C:\Users\16658\Desktop\mysql\code\mysql\main.c(20,21): warning C4090: “函数”: 不同的“const”限定符
+C:\Users\16658\Desktop\mysql\code\mysql\main.c(22,31): warning C4090: “函数”: 不同的“const”限定符
+C:\Users\16658\Desktop\mysql\code\mysql\main.c(24,49): warning C4090: “函数”: 不同的“const”限定符
+C:\Users\16658\Desktop\mysql\code\mysql\main.c(35,28): warning C4090: “函数”: 不同的“const”限定符
+C:\Users\16658\Desktop\mysql\code\mysql\main.c(37,54): warning C4090: “函数”: 不同的“const”限定符
+C:\Users\16658\Desktop\mysql\code\mysql\main.c(40,46): warning C4090: “函数”: 不同的“const”限定符
+C:\Users\16658\Desktop\mysql\code\mysql\main.c(44,61): warning C4090: “函数”: 不同的“const”限定符
+C:\Users\16658\Desktop\mysql\code\mysql\main.c(68,22): warning C4018: “<”: 有符号/无符号不匹配
+C:\Users\16658\Desktop\mysql\code\mysql\main.c(85,22): warning C4018: “<”: 有符号/无符号不匹配
+C:\Users\16658\Desktop\mysql\code\mysql\main.c(52,25): warning C4244: “初始化”: 从“uint64_t”转换到“unsigned int”，可能丢失数据
+C:\Users\16658\Desktop\mysql\code\mysql\main.c(104,28): warning C4090: “函数”: 不同的“const”限定符
+C:\Users\16658\Desktop\mysql\code\mysql\main.c(106,54): warning C4090: “函数”: 不同的“const”限定符
+C:\Users\16658\Desktop\mysql\code\mysql\main.c(111,47): warning C4090: “函数”: 不同的“const”限定符
+C:\Users\16658\Desktop\mysql\code\mysql\main.c(116,31): warning C4090: “函数”: 不同的“const”限定符
+C:\Users\16658\Desktop\mysql\code\mysql\main.c(118,63): warning C4090: “函数”: 不同的“const”限定符
+C:\Users\16658\Desktop\mysql\code\mysql\main.c(123,63): warning C4090: “函数”: 不同的“const”限定符
+C:\Users\16658\Desktop\mysql\code\mysql\main.c(123,12): warning C4477: “printf”: 格式字符串“%1lu”需要类型“unsigned long”的参数，但可变参数 1 拥有了类型“uint64_t”
+C:\Users\16658\Desktop\mysql\code\mysql\main.c(123,12): message : 请考虑在格式字符串中使用“%llu”
+C:\Users\16658\Desktop\mysql\code\mysql\main.c(123,12): message : 请考虑在格式字符串中使用“%Iu”
+C:\Users\16658\Desktop\mysql\code\mysql\main.c(123,12): message : 请考虑在格式字符串中使用“%I64u”
+C:\Users\16658\Desktop\mysql\code\mysql\main.c(139,23): warning C4018: “<”: 有符号/无符号不匹配
+C:\Users\16658\Desktop\mysql\code\mysql\main.c(150,23): warning C4018: “<”: 有符号/无符号不匹配
+C:\Users\16658\Desktop\mysql\code\mysql\main.c(160,34): warning C4090: “函数”: 不同的“const”限定符
+C:\Users\16658\Desktop\mysql\code\mysql\main.c(161,23): warning C4090: “函数”: 不同的“const”限定符
+C:\Users\16658\Desktop\mysql\code\mysql\main.c(163,42): warning C4090: “函数”: 不同的“const”限定符
+C:\Users\16658\Desktop\mysql\code\mysql\main.c(132,26): warning C4244: “初始化”: 从“uint64_t”转换到“unsigned int”，可能丢失数据
+C:\Users\16658\Desktop\mysql\code\mysql\main.c(27): warning C4715: “connectdatabase”: 不是所有的控件路径都返回值
+  mysql.vcxproj -> C:\Users\16658\Desktop\mysql\code\mysql\x64\Debug\mysql.exe
