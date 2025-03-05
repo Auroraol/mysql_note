@@ -4642,7 +4642,258 @@ CREATE INDEX idx_app_user_name ON app_user(name);
 
 ![image-20220802110948391](mysql2.0.assets/image-20220802110948391.png)
 
-## 21.索引准则
+## 21.7 复合索引
+
+最左前缀原则
+
+MySQL中的索引可以以一定顺序引用多列，这种索引叫作联合索引。如User表的name和city加联合索引就是(name,city)，**而最左前缀原则指的是**，<span style="color:red">如果查询的时候查询条件精确匹配索引的左边连续一列或几列，则此列就可以被用到。如果查询条件中索引字段都要这不考虑此原则</span>, **查询引擎会自动优化为匹配联合索引的顺序，这样是能够命中索引的**。
+
+如User表的name和city加联合索引就是(name,city)，  如下：
+
+```mysql
+select * from user where name=xx and city=xx ; ／／可以命中索引
+select * from user where name=xx ; // 可以命中索引
+select * from user where city=xx ; // 无法命中索引            
+select * from user where city=xx and name=xx; ／／可以命中索引
+```
+
+### 1. 查询条件包含全部索引字段（顺序一致）
+
+```
+SELECT * FROM user WHERE name = 'xx' AND city = 'xx';
+```
+
+**结果**：✅ **命中索引**
+**原因**：完全匹配联合索引的最左前缀顺序，直接使用完整的 `(name, city)` 索引。
+
+------
+
+### 2. 查询条件仅包含最左字段
+
+```
+SELECT * FROM user WHERE name = 'xx';
+```
+
+**结果**：✅ **命中索引**
+**原因**：满足最左前缀原则，使用 `(name)` 部分的索引。
+
+------
+
+### 3. 查询条件跳过最左字段
+
+```
+SELECT * FROM user WHERE city = 'xx';
+```
+
+**结果**：❌ **无法命中索引**
+**原因**：未包含最左字段 `name`，索引树无法直接定位 `city` 值。
+
+------
+
+### 4. 混合条件（包含全部索引字段（顺序不一致）和非索引字段）
+
+```
+SELECT * FROM user WHERE city = 'xx' AND sex = 'xx' AND name = 'xx';
+```
+
+**结果**：✅ **命中索引**
+**原因**：虽然条件顺序与索引顺序不同，但优化器会自动调整条件顺序。
+**执行过程**：
+
+1. 使用 `(name, city)` 索引，先通过 `name = 'xx'` 定位到索引范围；
+2. 在索引内进一步筛选 `city = 'xx'`；
+3. 回表查询完整数据行后，过滤 `sex = 'xx'`。
+
+## 21.8 索引失效
+
+1. 有or必全有索引;
+2. [复合索引](https://zhida.zhihu.com/search?content_id=168389904&content_type=Article&match_order=1&q=复合索引&zhida_source=entity)未用左列字段;
+3. like以%开头;
+4. 需要类型转换;
+5. where中索引列有运算;
+6. where中索引列使用了函数;
+7. 如果mysql觉得[全表扫描](https://zhida.zhihu.com/search?content_id=168389904&content_type=Article&match_order=1&q=全表扫描&zhida_source=entity)更快时（数据少）;
+
+
+
+### 1. OR条件全字段索引不全
+
+**场景**：当WHERE条件中使用OR连接多个条件，且部分字段无索引时
+
+```mysql
+-- 表结构
+CREATE TABLE users (
+  id INT PRIMARY KEY,
+  name VARCHAR(20), 
+  age INT,
+  INDEX (age)
+);
+
+-- 失效案例
+SELECT * FROM users WHERE age = 25 OR name = 'John';
+```
+
+**分析**：虽然age字段有索引，但name字段无索引，此时MySQL会进行全表扫描
+
+**解决方案**：
+
+```mysql
+-- 方案1：为name字段添加索引
+ALTER TABLE users ADD INDEX (name);
+
+-- 方案2：改写为UNION查询
+SELECT * FROM users WHERE age = 25
+UNION
+SELECT * FROM users WHERE name = 'John';
+```
+
+### 2. 复合索引未使用左列字段
+
+**场景**：复合索引(a,b,c)，但查询条件未包含最左列a
+
+```sql
+-- 表结构
+CREATE TABLE orders (
+  order_id INT PRIMARY KEY,
+  user_id INT,
+  status TINYINT,
+  INDEX composite_idx(user_id, status)
+);
+
+-- 失效案例
+SELECT * FROM orders WHERE status = 1;
+```
+
+**分析**：复合索引`user_id+status`的结构如下：
+
+```
+user_id (排序) -> status (排序)
+```
+
+当跳过user_id直接查询status时无法使用索引
+
+**验证**：使用EXPLAIN可见`key: NULL`
+
+### 3. LIKE以%开头
+
+**场景**：模糊查询使用前导通配符
+
+```MySQL
+-- 表结构
+CREATE TABLE products (
+  id INT PRIMARY KEY,
+  name VARCHAR(100),
+  INDEX (name)
+);
+
+-- 失效案例
+SELECT * FROM products WHERE name LIKE '%apple%';
+```
+
+**对比有效案例**：
+
+```MySQL
+SELECT * FROM products WHERE name LIKE 'apple%'; -- 使用索引
+```
+
+### 4. 隐式类型转换
+
+**场景**：字段类型与查询值类型不一致
+
+```
+-- 表结构
+CREATE TABLE employees (
+  id VARCHAR(20) PRIMARY KEY,
+  name VARCHAR(50),
+  INDEX (id)
+);
+
+-- 失效案例（id是字符串类型）
+SELECT * FROM employees WHERE id = 10086;
+```
+
+**分析**：实际执行的是`CAST(id AS SIGNED) = 10086`，导致索引失效
+
+```MySQL
+SELECT * FROM employees WHERE id = '10086';
+```
+
+### 5. 索引列参与运算
+
+**场景**：对索引字段进行数学运算
+
+```mysql
+-- 表结构
+CREATE TABLE sales (
+  id INT PRIMARY KEY,
+  amount DECIMAL(10,2),
+  INDEX (amount)
+);
+
+-- 失效案例
+SELECT * FROM sales WHERE amount + 100 > 500;
+```
+
+**优化方案**：
+
+```MySQL
+SELECT * FROM sales WHERE amount > 400;
+```
+
+### 6. 对索引列使用函数
+
+**场景**：在WHERE条件中对字段使用函数
+
+```MySQL
+-- 表结构
+CREATE TABLE logs (
+  id INT PRIMARY KEY,
+  create_time DATETIME,
+  INDEX (create_time)
+);
+
+-- 失效案例
+SELECT * FROM logs WHERE DATE(create_time) = '2023-01-01';
+```
+
+**优化方案**：
+
+```mysql
+SELECT * FROM logs 
+WHERE create_time >= '2023-01-01 00:00:00'
+AND create_time < '2023-01-02 00:00:00';
+```
+
+### 7. 小数据量全表扫描更快
+
+**场景**：当表中数据量较少时（通常<1000行）
+
+```mysql
+-- 表结构
+CREATE TABLE config (
+  id INT PRIMARY KEY,
+  key_name VARCHAR(50),
+  value VARCHAR(100),
+  INDEX (key_name)
+);
+
+-- 全表扫描案例（假设表中只有10条记录）
+EXPLAIN SELECT * FROM config WHERE key_name = 'timeout';
+```
+
+**执行计划显示**：
+
+```
++----+-------------+--------+------+---------------+------+---------+------+------+-------------+
+| id | select_type | table  | type | possible_keys | key  | key_len | ref  | rows | Extra       |
++----+-------------+--------+------+---------------+------+---------+------+------+-------------+
+|  1 | SIMPLE      | config | ALL  | key_name      | NULL | NULL    | NULL |   10 | Using where |
++----+-------------+--------+------+---------------+------+---------+------+------+-------------+
+```
+
+**分析**：即使key_name字段有索引，MySQL优化器认为全表扫描成本更低
+
+## 21.9 索引准则
 
 - **索引不是越多越好**
 - **不要对经常变动的数据加索引**
